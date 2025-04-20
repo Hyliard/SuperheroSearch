@@ -50,35 +50,48 @@ struct SuperheroDetail: View {
 
 struct SuperheroStats: View {
     let stats: ApiNetwork.Powerstats
-    
-    var body: some View {
-        VStack {
-            // Crear una gráfica circular usando SectorMark pero como no tengo version actual no tengo la opcion 
-           Chart{
-               //NO PUDE HACER ESTO POR QUE MI VERDION DE XCODE ES MAS VIEJA QUE LA ACTUAL.
-            //   BarMark(angle: .value("Count", Int(stats.combat) ?? 0),
-            //                   innerRadius: .ratio(0.5),
-            //                  angularInset: 2
-            //  ).cornerRadius(5)
-            //  BarMark(angle: .value("Count", Int(stats.durability) ?? 0),
-            // innerRadius: .ratio(0.5),
-            // angularInset: 2
-            //)
-        }
-        .frame(width: 200, height: 200)
-        .padding()
+
+    var data: [(String, Int)] {
+        [
+            ("Combat", Int(stats.combat) ?? 0),
+            ("Durability", Int(stats.durability) ?? 0),
+            ("Intelligence", Int(stats.intelligence) ?? 0),
+            ("Power", Int(stats.power) ?? 0),
+            ("Speed", Int(stats.speed) ?? 0),
+            ("Strength", Int(stats.strength) ?? 0),
+        ]
     }
-        .frame(maxWidth: .infinity, maxHeight: 250)
+
+    var body: some View {
+        VStack(alignment: .center) {
+            Text("Power Stats")
+                .font(.headline)
+                .padding(.bottom, 8)
+            
+            Chart(data, id: \.0) { stat in
+                SectorMark(
+                    angle: .value("Value", stat.1),
+                    innerRadius: .ratio(0.5)
+                )
+                .foregroundStyle(by: .value("Stat", stat.0))
+                .annotation(position: .overlay) {
+                    Text(stat.0)
+                        .font(.caption2)
+                        .foregroundColor(.white)
+                }
+            }
+            .frame(width: 250, height: 250)
+            .padding()
+        }
+        .frame(maxWidth: .infinity)
         .background(Color.white)
         .cornerRadius(16)
         .shadow(radius: 10)
         .padding(24)
-}
-}
-
-struct SuperheroDetail_Previews: PreviewProvider {
-    static var previews: some View {
-        SuperheroDetail(id: "2")
     }
 }
 
+
+#Preview {
+    SuperheroDetail(id: "2")
+}
