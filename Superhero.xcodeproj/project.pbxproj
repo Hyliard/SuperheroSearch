@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CE6CBDA82DED1AB7003265CB /* Simulator Screenshot - iPhone 15 Pro - 2025-06-01 at 20.21.06.png in Resources */ = {isa = PBXBuildFile; fileRef = CE6CBDA72DED1AB7003265CB /* Simulator Screenshot - iPhone 15 Pro - 2025-06-01 at 20.21.06.png */; };
 		CE7D41AB2CF48D5800362520 /* SuperheroApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7D41AA2CF48D5800362520 /* SuperheroApp.swift */; };
 		CE7D41AD2CF48D5800362520 /* MenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7D41AC2CF48D5800362520 /* MenuView.swift */; };
 		CE7D41AF2CF48D5B00362520 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CE7D41AE2CF48D5B00362520 /* Assets.xcassets */; };
@@ -18,6 +19,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		CE6CBDA72DED1AB7003265CB /* Simulator Screenshot - iPhone 15 Pro - 2025-06-01 at 20.21.06.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Simulator Screenshot - iPhone 15 Pro - 2025-06-01 at 20.21.06.png"; sourceTree = "<group>"; };
 		CE7D41A72CF48D5800362520 /* Superhero.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Superhero.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE7D41AA2CF48D5800362520 /* SuperheroApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuperheroApp.swift; sourceTree = "<group>"; };
 		CE7D41AC2CF48D5800362520 /* MenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuView.swift; sourceTree = "<group>"; };
@@ -40,9 +42,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		CE6CBDA62DED1A76003265CB /* Screenshots */ = {
+			isa = PBXGroup;
+			children = (
+				CE6CBDA72DED1AB7003265CB /* Simulator Screenshot - iPhone 15 Pro - 2025-06-01 at 20.21.06.png */,
+			);
+			path = Screenshots;
+			sourceTree = "<group>";
+		};
 		CE7D419E2CF48D5800362520 = {
 			isa = PBXGroup;
 			children = (
+				CE6CBDA62DED1A76003265CB /* Screenshots */,
 				CE7D41A92CF48D5800362520 /* Superhero */,
 				CE7D41A82CF48D5800362520 /* Products */,
 			);
@@ -143,6 +154,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE6CBDA82DED1AB7003265CB /* Simulator Screenshot - iPhone 15 Pro - 2025-06-01 at 20.21.06.png in Resources */,
 				CE7D41B22CF48D5B00362520 /* Preview Assets.xcassets in Resources */,
 				CE7D41AF2CF48D5B00362520 /* Assets.xcassets in Resources */,
 			);
