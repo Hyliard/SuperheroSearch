@@ -14,41 +14,66 @@ struct SuperheroSearcher: View {
     @State private var isLoading: Bool = false
     @State private var showError: Bool = false
     @State private var errorMessage: String = ""
+    @State private var showNoResults: Bool = false
     
     var body: some View {
         NavigationStack {
             ZStack {
-                // Fondo con capa de overlay para mejor contraste
-                Color("BackgroundApp")
-                    .ignoresSafeArea()
+                // Fondo con gradiente para más profundidad
+                LinearGradient(
+                    gradient: Gradient(colors: [
+                        Color("BackgroundApp"),
+                        Color("BackgroundApp").opacity(0.8),
+                        Color("BackgroundApp").opacity(0.6)
+                    ]),
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .ignoresSafeArea()
                 
                 // Contenido principal
-                VStack(spacing: 20) {
-                    // Barra de búsqueda moderna
+                VStack(spacing: 16) {
+                    // Barra de búsqueda mejorada
                     searchField
+                        .padding(.top, 8)
                     
                     // Estado de carga/error
                     if isLoading {
                         loadingView
                     } else if showError {
                         errorView
+                    } else if showNoResults {
+                        noResultsView
                     }
                     
-                    // Lista de resultados
-                    resultsList
+                    // Lista de resultados con animación
+                    if wrapper != nil && !(wrapper?.results.isEmpty ?? true) {
+                        resultsList
+                            .transition(.opacity.combined(with: .scale(0.95)))
+                    }
+                    
+                    Spacer()
                 }
                 .padding(.horizontal)
                 .navigationTitle("Superhero Search")
                 .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .principal) {
+                        Text("Superhero Search")
+                            .font(.title3.bold())
+                            .foregroundColor(.white)
+                    }
+                }
             }
         }
     }
     
-    // Componente de barra de búsqueda
+    // Componente de barra de búsqueda mejorado
     private var searchField: some View {
         HStack {
             Image(systemName: "magnifyingglass")
                 .foregroundColor(.white.opacity(0.7))
+                .font(.system(size: 18, weight: .semibold))
             
             TextField("", text: $superheroName, prompt: Text("Busca tu superhéroe...").foregroundColor(.white.opacity(0.7)))
                 .foregroundColor(.white)
@@ -56,104 +81,173 @@ struct SuperheroSearcher: View {
                 .textInputAutocapitalization(.words)
                 .submitLabel(.search)
                 .onSubmit(performSearch)
+                .font(.system(size: 16))
             
             if !superheroName.isEmpty {
                 Button(action: {
                     superheroName = ""
+                    wrapper = nil
+                    showNoResults = false
                 }) {
                     Image(systemName: "xmark.circle.fill")
                         .foregroundColor(.white.opacity(0.7))
+                        .font(.system(size: 18))
                 }
+                .transition(.opacity)
+                .animation(.easeInOut, value: superheroName)
             }
         }
-        .padding(.horizontal, 15)
-        .padding(.vertical, 12)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
         .background(Color.white.opacity(0.15))
-        .cornerRadius(12)
+        .cornerRadius(14)
         .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.blue.opacity(0.5), lineWidth: 1.5)
+            RoundedRectangle(cornerRadius: 14)
+                .stroke(LinearGradient(
+                    gradient: Gradient(colors: [Color.blue.opacity(0.7), Color.blue.opacity(0.3)]),
+                    startPoint: .leading,
+                    endPoint: .trailing
+                ), lineWidth: 1.5)
         )
-        .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
+        .shadow(color: .black.opacity(0.2), radius: 6, x: 0, y: 3)
     }
     
-    // Vista de carga
+    // Vista de carga mejorada
     private var loadingView: some View {
-        VStack {
+        VStack(spacing: 16) {
             ProgressView()
                 .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                .scaleEffect(1.5)
+                .scaleEffect(1.8)
+                .padding(.bottom, 8)
+            
             Text("Buscando superhéroes...")
                 .foregroundColor(.white)
-                .padding(.top, 8)
+                .font(.headline)
+            
+            Text("Estamos consultando la base de datos de héroes")
+                .foregroundColor(.white.opacity(0.8))
+                .font(.subheadline)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 30)
+        .padding(.vertical, 40)
+        .background(Color.white.opacity(0.1))
+        .cornerRadius(16)
+        .padding(.horizontal, 24)
+        .transition(.opacity)
     }
     
-    // Vista de error
+    // Vista de error mejorada
     private var errorView: some View {
-        VStack(spacing: 10) {
+        VStack(spacing: 16) {
             Image(systemName: "exclamationmark.triangle.fill")
-                .font(.system(size: 40))
+                .font(.system(size: 44))
                 .foregroundColor(.yellow)
+                .symbolEffect(.pulse)
+            
+            Text("¡Ups! Algo salió mal")
+                .font(.title3.bold())
+                .foregroundColor(.white)
             
             Text(errorMessage)
-                .foregroundColor(.white)
+                .foregroundColor(.white.opacity(0.9))
                 .multilineTextAlignment(.center)
+                .font(.subheadline)
+                .padding(.horizontal, 20)
             
-            Button("Reintentar") {
-                performSearch()
+            Button(action: {
+                withAnimation {
+                    performSearch()
+                }
+            }) {
+                HStack {
+                    Image(systemName: "arrow.clockwise")
+                    Text("Reintentar")
+                }
+                .font(.headline)
+                .foregroundColor(.white)
+                .padding(.horizontal, 24)
+                .padding(.vertical, 10)
+                .background(Color.blue.opacity(0.8))
+                .cornerRadius(12)
             }
-            .buttonStyle(.borderedProminent)
-            .tint(.blue)
-            .padding(.top, 10)
+            .padding(.top, 8)
         }
         .padding()
         .frame(maxWidth: .infinity)
         .background(Color.white.opacity(0.15))
-        .cornerRadius(12)
-        .padding(.horizontal)
+        .cornerRadius(16)
+        .padding(.horizontal, 24)
+        .transition(.opacity)
     }
     
-    // Lista de resultados
-    private var resultsList: some View {
-        List {
-            ForEach(wrapper?.results ?? []) { superhero in
-                SuperheroItem(superhero: superhero)
-                    .listRowBackground(Color.clear)
-                    .listRowSeparator(.hidden)
-                    .listRowInsets(EdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0))
-                    .overlay(
-                        NavigationLink(destination: SuperheroDetail(id: superhero.id)) {
-                            EmptyView()
-                        }
-                        .opacity(0)
-                    )
-            }
+    // Nueva vista para cuando no hay resultados
+    private var noResultsView: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "person.fill.questionmark")
+                .font(.system(size: 44))
+                .foregroundColor(.white.opacity(0.7))
+            
+            Text("No encontramos coincidencias")
+                .font(.title3.bold())
+                .foregroundColor(.white)
+            
+            Text("Intenta con otro nombre o revisa la ortografía")
+                .foregroundColor(.white.opacity(0.8))
+                .multilineTextAlignment(.center)
+                .font(.subheadline)
+                .padding(.horizontal, 20)
         }
-        .listStyle(.plain)
-        .scrollContentBackground(.hidden)
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 40)
+        .transition(.opacity)
     }
     
-    // Función para realizar la búsqueda
+    // Lista de resultados mejorada
+    private var resultsList: some View {
+        ScrollView {
+            LazyVStack(spacing: 16) {
+                ForEach(wrapper?.results ?? []) { superhero in
+                    NavigationLink(destination: SuperheroDetail(id: superhero.id)) {
+                        SuperheroItem(superhero: superhero)
+                    }
+                    .buttonStyle(ScaleButtonStyle())
+                }
+            }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 12)
+        }
+    }
+    
+    // Función para realizar la búsqueda con mejor manejo de estados
     private func performSearch() {
-        guard !superheroName.isEmpty else { return }
+        guard !superheroName.isEmpty else {
+            wrapper = nil
+            showNoResults = false
+            return
+        }
         
-        isLoading = true
-        showError = false
+        withAnimation(.easeInOut(duration: 0.3)) {
+            isLoading = true
+            showError = false
+            showNoResults = false
+        }
         
         Task {
             do {
-                wrapper = try await ApiNetwork().getHeroesByQuery(query: superheroName)
-                if wrapper?.results.isEmpty ?? true {
-                    showError(message: "No encontramos superhéroes con ese nombre")
+                let results = try await ApiNetwork().getHeroesByQuery(query: superheroName)
+                
+                withAnimation(.spring()) {
+                    wrapper = results
+                    isLoading = false
+                    showNoResults = results.results.isEmpty
                 }
             } catch {
-                showError(message: "Error al buscar superhéroes. Intenta nuevamente.")
+                withAnimation {
+                    isLoading = false
+                    showError(message: error.localizedDescription)
+                }
                 print("Error: \(error.localizedDescription)")
             }
-            isLoading = false
         }
     }
     
@@ -168,16 +262,17 @@ struct SuperheroItem: View {
     
     var body: some View {
         ZStack(alignment: .bottom) {
-            // Imagen del superhéroe con efecto de overlay
+            // Imagen del superhéroe
             WebImage(url: URL(string: superhero.image.url))
                 .resizable()
                 .indicator(.activity)
+                .transition(.fade(duration: 0.5))
                 .scaledToFill()
                 .frame(height: 220)
                 .clipped()
                 .overlay(
                     LinearGradient(
-                        gradient: Gradient(colors: [.clear, .black.opacity(0.7)]),
+                        gradient: Gradient(colors: [.clear, .black.opacity(0.8)]),
                         startPoint: .top,
                         endPoint: .bottom
                     )
@@ -185,22 +280,45 @@ struct SuperheroItem: View {
                 .cornerRadius(16)
             
             // Nombre del superhéroe
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 8) {
                 Text(superhero.name)
-                    .font(.title2)
-                    .fontWeight(.bold)
+                    .font(.title2.bold())
                     .foregroundColor(.white)
-                
-                // Nota: Aquí originalmente intentabas mostrar publisher,
-                // pero no está disponible en Superhero básico
-                // Para mostrarlo necesitarías usar SuperheroCompleted
+                    .shadow(color: .black, radius: 2, x: 0, y: 1)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding()
         }
         .frame(height: 220)
-        .padding(.horizontal, 8)
-        .shadow(color: .black.opacity(0.3), radius: 10, x: 0, y: 5)
+        .background(Color.white.opacity(0.1))
+        .cornerRadius(16)
+        .shadow(color: .black.opacity(0.4), radius: 8, x: 0, y: 4)
+    }
+}
+
+// Componente para mostrar badges (etiquetas)
+struct BadgeView: View {
+    let text: String
+    let color: Color
+    
+    var body: some View {
+        Text(text.capitalized)
+            .font(.caption.bold())
+            .foregroundColor(.white)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 4)
+            .background(color.opacity(0.8))
+            .cornerRadius(12)
+    }
+}
+
+// Efecto personalizado para los botones
+struct ScaleButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.96 : 1.0)
+            .opacity(configuration.isPressed ? 0.9 : 1.0)
+            .animation(.easeInOut(duration: 0.15), value: configuration.isPressed)
     }
 }
 
